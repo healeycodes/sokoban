@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "noImplicitAny": false,
+      "noEmitOnError": true,
+      "removeComments": false,
+      "sourceMap": true,
+      "target": "es5",
+      "module": "es2015",
+      "moduleResolution": "node",
+      "outDir": "public/js"
+    },
+    "include": [
+      "./index.ts"
+    ]
+}
