@@ -1,0 +1,26 @@
+{
+  "name": "sokoban",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/healeycodes/sokoban.git"
+  },
+  "keywords": [],
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/healeycodes/sokoban/issues"
+  },
+  "homepage": "https://github.com/healeycodes/sokoban#readme",
+  "devDependencies": {
+    "@types/jest": "^28.1.0",
+    "jest": "^28.1.0",
+    "ts-jest": "^28.0.4",
+    "ts-node": "^10.8.0",
+    "typescript": "^4.7.3"
+  }
+}
