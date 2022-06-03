@@ -12,7 +12,8 @@ import {
 const debug = { steps: 0 };
 
 /** Perform a depth-first search for a solution.
-Optionally, set a max depth.
+`depth` should be set at or beyond the solution length.
+
 This solve function is better than a brute force search by:
 - Not revisiting previously seen level states
 - Choosing moves that:
@@ -20,7 +21,7 @@ This solve function is better than a brute force search by:
   - b) Decrease the total distance of boxes from their nearest(*) goals
 
 (*) "nearest" means the naive distance, as if there were no other blockers */
-export function solve(level: LevelYX, depth: number = Infinity) {
+export function solve(level: LevelYX, depth: number) {
   // Don't revisit previously seen level states
   const seen = new Set();
 
@@ -130,13 +131,15 @@ export function solve(level: LevelYX, depth: number = Infinity) {
 // #   $ .#
 // ########`;
 
-// import { parseLevel, PLAYER_ON_GOAL } from "./game";
+// import { parseLevel } from "./game";
 
 // const level = parseLevel(level0);
 // for (let i = 32; i < 50; i++) {
 //   const result = solve(level, i);
-//   console.log(`depth: ${i} steps: ${debug.steps} path: ${result}`);
 //   if (result !== false) {
+//     console.log(
+//       `depth: ${i} steps: ${debug.steps} path(${result.length}): ${result}`
+//     );
 //     break;
 //   }
 //   debug.steps = 0;
