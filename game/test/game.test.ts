@@ -1,8 +1,8 @@
 import { newGame } from "../game";
-import { level1, level1_5, level2 } from "../levels";
+import { level1, level1_5, level2 } from "../test-levels";
 
 describe("levels can be completed", () => {
-  it("level1", () => {
+  test("level1", () => {
     const game = newGame(level1);
     // Check that starting state is not winning
     expect(game.hasWon()).toBe(false);
@@ -10,7 +10,7 @@ describe("levels can be completed", () => {
     expect(game.hasWon()).toBe(true);
   });
 
-  it("level2", () => {
+  test("level2", () => {
     const game = newGame(level2);
     game.move([1, 0]);
     game.move([1, 0]);
@@ -29,7 +29,7 @@ describe("levels can be completed", () => {
 });
 
 describe("movement edge cases are handled", () => {
-  it("moving into walls", () => {
+  test("moving into walls", () => {
     const game = newGame(level1);
     // Moving into walls is a no-op
     game.move([-1, 0]);
@@ -39,10 +39,19 @@ describe("movement edge cases are handled", () => {
     game.move([1, 0]);
     expect(game.hasWon()).toBe(true);
   });
+
+  test("move box off goal", () => {
+    const game = newGame(level2);
+    game.move([1, 0]);
+    game.move([1, 0]);
+    game.move([1, 0]);
+    expect(game.state()[1][4]).toBe("+");
+    expect(game.state()[1][5]).toBe("$");
+  });
 });
 
 describe("undo/score functionality", () => {
-  it("works", () => {
+  test("works", () => {
     const game = newGame(level1_5);
     game.move([1, 0]);
     expect(game.score()).toEqual([1, 1]);

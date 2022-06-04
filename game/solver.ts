@@ -9,7 +9,7 @@ import {
   PLAYER_ON_GOAL,
 } from "./game";
 
-const debug = { steps: 0 };
+const stats = { steps: 0 };
 
 /** Perform a depth-first search for a solution.
 `depth` should be set at or beyond the solution length.
@@ -29,7 +29,7 @@ export function solve(level: LevelYX, depth: number) {
     level: LevelYX,
     depth: number,
     path: string
-  ): false | string {
+  ): [false, number] | [string, number] {
     const dirs = [
       [1, 0],
       [-1, 0],
@@ -53,7 +53,7 @@ export function solve(level: LevelYX, depth: number) {
       let _path = path;
       const attempt = movePlayer(level, dir[0], dir[1], false);
       if (attempt !== false) {
-        debug.steps++;
+        stats.steps++;
         const clone = JSON.parse(JSON.stringify(level));
         _path += attempt;
         movePlayer(clone, dir[0], dir[1], true);
@@ -66,7 +66,7 @@ export function solve(level: LevelYX, depth: number) {
 
         // Short circuit on a game-winning move
         if (checkGameWon(clone)) {
-          return _path;
+          return [_path, stats.steps];
         }
 
         const boxes = findChar(clone, BOX);
@@ -99,48 +99,12 @@ export function solve(level: LevelYX, depth: number) {
     // Note: there might be zero unseen level states
     for (let i = 0; i < moves.length; i++) {
       const next = innerSolve(moves[i][0], depth - 1, moves[i][1]);
-      if (next !== false) {
+      if (next[0] !== false) {
         return next;
       }
     }
 
-    return false;
+    return [false, -1];
   }
   return innerSolve(level, depth, "");
 }
-
-// // Uncomment for a tighter feedback loop
-
-// const level0 = `########
-// #@ $.  #
-// # $  . #
-// #   $ .#
-// # $  . #
-// #   $ .#
-// # $  . #
-// #   $ .#
-// #   $ .#
-// # $  . #
-// #   $ .#
-// # $  . #
-// #   $ .#
-// # $  . #
-// #   $ .#
-// #   $ .#
-// # $  . #
-// #   $ .#
-// ########`;
-
-// import { parseLevel } from "./game";
-
-// const level = parseLevel(level0);
-// for (let i = 32; i < 50; i++) {
-//   const result = solve(level, i);
-//   if (result !== false) {
-//     console.log(
-//       `depth: ${i} steps: ${debug.steps} path(${result.length}): ${result}`
-//     );
-//     break;
-//   }
-//   debug.steps = 0;
-// }

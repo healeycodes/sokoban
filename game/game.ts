@@ -43,7 +43,8 @@ export function movePlayer(
   level: LevelYX,
   dirX: number,
   dirY: number,
-  apply: boolean
+  apply: boolean,
+  canPush: boolean = true
 ): false | string {
   const player =
     findChar(level, PLAYER).length === 0
@@ -60,6 +61,10 @@ export function movePlayer(
   }
 
   if (level[targetY][targetX] === WALL) {
+    return false;
+  }
+
+  if (!canPush) {
     return false;
   }
 
@@ -105,21 +110,22 @@ function swapChars(
   x2: number,
   y2: number
 ) {
-  const swap = () => {
-    [level[y1][x1], level[y2][x2]] = [level[y2][x2], level[y1][x1]];
-  };
-
   if (level[y1][x1] === PLAYER && level[y2][x2] === FLOOR) {
-    swap();
-  }
-  if (level[y1][x1] === BOX && level[y2][x2] === FLOOR) {
-    swap();
-  }
-  if (level[y1][x1] === PLAYER && level[y2][x2] === GOAL) {
+    level[y1][x1] = FLOOR;
+    level[y2][x2] = PLAYER;
+  } else if (level[y1][x1] === BOX && level[y2][x2] === FLOOR) {
+    level[y1][x1] = FLOOR;
+    level[y2][x2] = BOX;
+  } else if (level[y1][x1] === PLAYER_ON_GOAL && level[y2][x2] === FLOOR) {
+    level[y1][x1] = GOAL;
+    level[y2][x2] = PLAYER;
+  } else if (level[y1][x1] === BOX_ON_GOAL && level[y2][x2] === FLOOR) {
+    level[y1][x1] = GOAL;
+    level[y2][x2] = BOX;
+  } else if (level[y1][x1] === PLAYER && level[y2][x2] === GOAL) {
     level[y1][x1] = FLOOR;
     level[y2][x2] = PLAYER_ON_GOAL;
-  }
-  if (level[y1][x1] === BOX && level[y2][x2] === GOAL) {
+  } else if (level[y1][x1] === BOX && level[y2][x2] === GOAL) {
     level[y1][x1] = FLOOR;
     level[y2][x2] = BOX_ON_GOAL;
   }
