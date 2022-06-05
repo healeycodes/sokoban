@@ -12,7 +12,6 @@ import {
 const stats = { steps: 0 };
 
 /** Perform a depth-first search for a solution.
-`depth` should be set at or beyond the solution length.
 
 This solve function is better than a brute force search by:
 - Not revisiting previously seen level states
@@ -21,13 +20,15 @@ This solve function is better than a brute force search by:
   - b) Decrease the total distance of boxes from their nearest(*) goals
 
 (*) "nearest" means the naive distance, as if there were no other blockers */
-export function solve(level: LevelYX, depth: number) {
+export function solve(level: LevelYX) {
+  // Reset steps
+  stats.steps = 0;
+
   // Don't revisit previously seen level states
   const seen = new Set();
 
   function innerSolve(
     level: LevelYX,
-    depth: number,
     path: string
   ): [false, number] | [string, number] {
     const dirs = [
@@ -98,7 +99,7 @@ export function solve(level: LevelYX, depth: number) {
 
     // Note: there might be zero unseen level states
     for (let i = 0; i < moves.length; i++) {
-      const next = innerSolve(moves[i][0], depth - 1, moves[i][1]);
+      const next = innerSolve(moves[i][0], moves[i][1]);
       if (next[0] !== false) {
         return next;
       }
@@ -106,5 +107,5 @@ export function solve(level: LevelYX, depth: number) {
 
     return [false, -1];
   }
-  return innerSolve(level, depth, "");
+  return innerSolve(level, "");
 }

@@ -114,20 +114,26 @@ function swapChars(
   if (level[y1][x1] === PLAYER && level[y2][x2] === FLOOR) {
     level[y1][x1] = FLOOR;
     level[y2][x2] = PLAYER;
-  } else if (level[y1][x1] === BOX && level[y2][x2] === FLOOR) {
-    level[y1][x1] = FLOOR;
-    level[y2][x2] = BOX;
-  } else if (level[y1][x1] === PLAYER_ON_GOAL && level[y2][x2] === FLOOR) {
-    level[y1][x1] = GOAL;
-    level[y2][x2] = PLAYER;
-  } else if (level[y1][x1] === BOX_ON_GOAL && level[y2][x2] === FLOOR) {
-    level[y1][x1] = GOAL;
-    level[y2][x2] = BOX;
   } else if (level[y1][x1] === PLAYER && level[y2][x2] === GOAL) {
     level[y1][x1] = FLOOR;
     level[y2][x2] = PLAYER_ON_GOAL;
+  } else if (level[y1][x1] === PLAYER_ON_GOAL && level[y2][x2] === FLOOR) {
+    level[y1][x1] = GOAL;
+    level[y2][x2] = PLAYER;
+  } else if (level[y1][x1] === PLAYER_ON_GOAL && level[y2][x2] === GOAL) {
+    level[y1][x1] = GOAL;
+    level[y2][x2] = PLAYER_ON_GOAL;
+  } else if (level[y1][x1] === BOX && level[y2][x2] === FLOOR) {
+    level[y1][x1] = FLOOR;
+    level[y2][x2] = BOX;
   } else if (level[y1][x1] === BOX && level[y2][x2] === GOAL) {
     level[y1][x1] = FLOOR;
+    level[y2][x2] = BOX_ON_GOAL;
+  } else if (level[y1][x1] === BOX_ON_GOAL && level[y2][x2] === FLOOR) {
+    level[y1][x1] = GOAL;
+    level[y2][x2] = BOX;
+  } else if (level[y1][x1] === BOX_ON_GOAL && level[y2][x2] === BOX_ON_GOAL) {
+    level[y1][x1] = GOAL;
     level[y2][x2] = BOX_ON_GOAL;
   }
 }
@@ -143,11 +149,11 @@ export function newGame(levelText: string): Game {
   const scores: MovesAndPushes[] = [];
 
   const init = () => {
-    history.splice(0)
-    history.push(parseLevel(levelText))
-    scores.splice(0)
-  }
-  init()
+    history.splice(0);
+    history.push(parseLevel(levelText));
+    scores.splice(0);
+  };
+  init();
 
   return {
     state: () => {
@@ -169,7 +175,7 @@ export function newGame(levelText: string): Game {
       }
     },
     undo: () => {
-      if (history.length > 0) {
+      if (history.length > 1) {
         scores.pop();
         history.pop();
       }

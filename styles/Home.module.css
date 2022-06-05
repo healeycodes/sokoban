@@ -12,14 +12,8 @@
   align-items: center;
 }
 
-.screen td {
-  width: 16px;
+.screen div {
   height: 16px;
-  padding: 0;
-}
-
-.screen tr {
-  line-height: 16px;
 }
 
 .screen img {

@@ -1,5 +1,5 @@
 import { newGame } from "../game";
-import { level1, level1_5, level2 } from "../test-levels";
+import { level1, level1_5, level2 } from "./test-levels";
 
 describe("levels can be completed", () => {
   test("level1", () => {
@@ -65,10 +65,10 @@ describe("undoe functionality", () => {
 
   test("level state can be mutated", () => {
     const game = newGame(level1_5);
-    expect(game.state()[1][1]).toBe('@')
+    expect(game.state()[1][1]).toBe("@");
     game.move([1, 0]);
-    expect(game.state()[1][1]).toBe(' ')
+    expect(game.state()[1][1]).toBe(" ");
     game.undo();
-    expect(game.state()[1][1]).toBe('@')
+    expect(game.state()[1][1]).toBe("@");
   });
 });
