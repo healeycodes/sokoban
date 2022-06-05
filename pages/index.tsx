@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import { newGame, LevelYX, PLAYER, GOAL, BOX, BOX_ON_GOAL, WALL, FLOOR, PLAYER_ON_GOAL } from '../game/game';
+import { newGame, LevelYX, PLAYER, GOAL, BOX, BOX_ON_GOAL, WALL, FLOOR, PLAYER_ON_GOAL, Game } from '../game/game';
 import { level1, level2 } from '../game/test-levels';
 
 // Player
@@ -17,80 +17,40 @@ import box from '../game/skins/boxxle/object.bmp'
 import box_on_goal from '../game/skins/boxxle/object_store.bmp'
 import { useCallback, useEffect, useState } from 'react';
 
-const STARTING_DIRECTION = 'd'
-
-const render = (level: LevelYX, lastDir: string) => {
-  const rows = []
-  for (let y = 0; y < level.length; y++) {
-    const row = []
-    for (let x = 0; x < level[y].length; x++) {
-      if (level[y][x] === PLAYER || level[y][x] === PLAYER_ON_GOAL) {
-        if (lastDir === 'r') {
-          row.push(<td key={`${y}, ${x}, player_right`}><img src={player_right.src} /></td>)
-        } else if (lastDir === 'l') {
-          row.push(<td key={`${y}, ${x}, player_left`}><img src={player_left.src} /></td>)
-        } else if (lastDir === 'u') {
-          row.push(<td key={`${y}, ${x}, player_up`}><img src={player_up.src} /></td>)
-        } else if (lastDir === 'd') {
-          row.push(<td key={`${y}, ${x}, player_down`}><img src={player_down.src} /></td>)
-        }
-      } else if (level[y][x] === GOAL) {
-        row.push(<td key={`${y}, ${x}, goal`}><img src={goal.src} /></td>)
-      } else if (level[y][x] === BOX) {
-        row.push(<td key={`${y}, ${x}, box`}><img src={box.src} /></td>)
-      } else if (level[y][x] === BOX_ON_GOAL) {
-        row.push(<td key={`${y}, ${x}, box_on_goal`}><img src={box_on_goal.src} /></td>)
-      } else if (level[y][x] === WALL) {
-        row.push(<td key={`${y}, ${x}, wall`}><img src={wall.src} /></td>)
-      } else if (level[y][x] === FLOOR) {
-        row.push(<td key={`${y}, ${x}, floor`}><img src={floor.src} /></td>)
-      }
-    }
-    rows.push(<tr key={`row: ${y}}`}>{row}</tr>)
-  }
-  return <table className={styles.screen}><tbody>
-    {rows}
-  </tbody>
-  </table>
+const keyToDir: {[key: string]: [number, number]} = {
+  'ArrowLeft': [-1, 0],
+  'ArrowRight': [1, 0],
+  'ArrowDown': [0, 1],
+  'ArrowUp': [0, -1]
 }
-
-const keyToDir = (key: string): [[number, number], string] | null => {
-  if (key === 'ArrowLeft') {
-    return [[-1, 0], 'l']
-  } else if (key === 'ArrowRight') {
-    return [[1, 0], 'r']
-  } else if (key === 'ArrowDown') {
-    return [[0, 1], 'd']
-  } else if (key === 'ArrowUp') {
-    return [[0, -1], 'u']
-  }
-
-  return null
-}
+const startingDir: [number, number] = [0, 1]
 
 const Home: NextPage = () => {
   const level = level2;
   const [game, setGame] = useState(newGame(level));
-  const [gameWon, setGameWon] = useState(false)
-  const [screen, setScreen] = useState(render(game.state(), STARTING_DIRECTION));
+  const [lastDir, setLastDir] = useState<[number, number]>(startingDir)
 
   const checkKeyPress = useCallback((ev: KeyboardEvent) => {
+    if (game.hasWon()) {
+      return
+    }
+
     if (ev.key === 'r') {
-      // TODO: restart
+      game.reset()
     }
 
     if (ev.key === 'z') {
-      // TODO: undo
+      game.undo()
     }
 
-    const dir = keyToDir(ev.key)
-    if (dir && !gameWon) {
-      game.move(dir[0])
-      setGame(game)
-      setGameWon(game.hasWon())
-      setScreen(render(game.state(), dir[1]))
+    const dir: [number, number] = keyToDir[ev.key]
+    if (dir) {
+      game.move(dir)
     }
-  }, [game, gameWon, screen]);
+
+    setGame({...game})
+    setLastDir(dir || lastDir)
+  }, []);
 
   useEffect(() => {
     window.addEventListener("keydown", checkKeyPress);
@@ -112,14 +72,14 @@ const Home: NextPage = () => {
           Sokoban
         </h1>
 
+        <div>
+          {render(game, lastDir)}
+        </div>
+
         <p className={styles.description}>
           Get started by editing{' '}
           <code className={styles.code}>pages/index.tsx</code>
         </p>
-
-        <div>
-          {screen}
-        </div>
       </main>
 
       <footer className={styles.footer}>
@@ -127,6 +87,42 @@ const Home: NextPage = () => {
       </footer>
     </div>
   )
+}
+
+function render (game: Game, dir: [number, number]) {
+  const state = game.state()
+  const rows = []
+  for (let y = 0; y < state.length; y++) {
+    const row = []
+    for (let x = 0; x < state[y].length; x++) {
+      if (state[y][x] === PLAYER || state[y][x] === PLAYER_ON_GOAL) {
+        if (dir[0] === 1) {
+          row.push(<td key={`${y}, ${x}, player_right`}><img src={player_right.src} /></td>)
+        } else if (dir[0] === -1) {
+          row.push(<td key={`${y}, ${x}, player_left`}><img src={player_left.src} /></td>)
+        } else if (dir[1] === -1) {
+          row.push(<td key={`${y}, ${x}, player_up`}><img src={player_up.src} /></td>)
+        } else if (dir[1] === 1) {
+          row.push(<td key={`${y}, ${x}, player_down`}><img src={player_down.src} /></td>)
+        }
+      } else if (state[y][x] === GOAL) {
+        row.push(<td key={`${y}, ${x}, goal`}><img src={goal.src} /></td>)
+      } else if (state[y][x] === BOX) {
+        row.push(<td key={`${y}, ${x}, box`}><img src={box.src} /></td>)
+      } else if (state[y][x] === BOX_ON_GOAL) {
+        row.push(<td key={`${y}, ${x}, box_on_goal`}><img src={box_on_goal.src} /></td>)
+      } else if (state[y][x] === WALL) {
+        row.push(<td key={`${y}, ${x}, wall`}><img src={wall.src} /></td>)
+      } else if (state[y][x] === FLOOR) {
+        row.push(<td key={`${y}, ${x}, floor`}><img src={floor.src} /></td>)
+      }
+    }
+    rows.push(<tr key={`row: ${y}}`}>{row}</tr>)
+  }
+  return <table className={styles.screen}><tbody>
+    {rows}
+  </tbody>
+  </table>
 }
 
 export default Home

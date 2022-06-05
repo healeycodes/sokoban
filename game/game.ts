@@ -1,13 +1,14 @@
 export type LevelYX = string[][];
-type XY = [number, number];
-type MovesAndPushes = [number, number];
-type Game = {
+export type Game = {
   state: () => LevelYX;
   hasWon: () => boolean;
   move: (dir: XY) => void;
   undo: () => void;
+  reset: () => void;
   score: () => MovesAndPushes;
 };
+type XY = [number, number];
+type MovesAndPushes = [number, number];
 
 export const WALL = "#";
 export const PLAYER = "@";
@@ -138,8 +139,16 @@ export function checkGameWon(level: LevelYX) {
 }
 
 export function newGame(levelText: string): Game {
-  const history: LevelYX[] = [parseLevel(levelText)];
+  const history: LevelYX[] = [];
   const scores: MovesAndPushes[] = [];
+
+  const init = () => {
+    history.splice(0)
+    history.push(parseLevel(levelText))
+    scores.splice(0)
+  }
+  init()
+
   return {
     state: () => {
       return history[history.length - 1];
@@ -160,15 +169,12 @@ export function newGame(levelText: string): Game {
       }
     },
     undo: () => {
-      if (history.length > 1) {
+      if (history.length > 0) {
         scores.pop();
-        const previous = history.pop();
-        // This check is unnecessary but let's make TypeScript happy
-        if (previous) {
-          history[history.length - 1] = previous;
-        }
+        history.pop();
       }
     },
+    reset: () => init(),
     score: () => {
       return scores.reduce(
         (prev, cur) => {

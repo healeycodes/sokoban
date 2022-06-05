@@ -50,8 +50,8 @@ describe("movement edge cases are handled", () => {
   });
 });
 
-describe("undo/score functionality", () => {
-  test("works", () => {
+describe("undoe functionality", () => {
+  test("scores can be mutated", () => {
     const game = newGame(level1_5);
     game.move([1, 0]);
     expect(game.score()).toEqual([1, 1]);
@@ -61,5 +61,14 @@ describe("undo/score functionality", () => {
     game.move([1, 0]);
     game.move([-1, 0]);
     expect(game.score()).toEqual([2, 1]);
+  });
+
+  test("level state can be mutated", () => {
+    const game = newGame(level1_5);
+    expect(game.state()[1][1]).toBe('@')
+    game.move([1, 0]);
+    expect(game.state()[1][1]).toBe(' ')
+    game.undo();
+    expect(game.state()[1][1]).toBe('@')
   });
 });
