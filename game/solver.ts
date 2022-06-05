@@ -49,6 +49,9 @@ export function solve(level: LevelYX) {
       number
     ][] = [];
 
+    // Prove up to four of the next legal moves and apply move ordering based on
+    // moving boxes onto goals, and the total Manhattan distance of boxes to goals.
+    // Also check if any of the next legal moves are the winning move
     for (let i = 0; i < dirs.length; i++) {
       const dir = dirs[i];
       let _path = path;
@@ -92,7 +95,9 @@ export function solve(level: LevelYX) {
     }
 
     moves.sort((a, b) => {
+      // Weight boxes onto goals highest
       const boxesOnGoals = (b[2] - a[2]) * 1000;
+      // Otherwise, if there's a tie, fallback to this
       const boxToGoalDistanceTotal = a[3] - b[3];
       return boxesOnGoals + boxToGoalDistanceTotal;
     });

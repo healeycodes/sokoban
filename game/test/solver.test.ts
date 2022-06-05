@@ -60,7 +60,9 @@ describe("microcosmos levels can be solved", () => {
     expect(result[0]).not.toEqual(false);
   });
 
-  // TODO: Possible bug that these aren't solvable
+  // // TODO: Possible bug that these aren't solvable
+  // // perhaps around duplicate state pruning?
+  //
   // test("level5", () => {
   //   const level = parseLevel(microcosmos[5]);
   //   const result = solve(level);
