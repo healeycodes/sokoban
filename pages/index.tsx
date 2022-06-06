@@ -93,6 +93,7 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <pre>
+          <br />
           level: {level}/{microcosmos.length}<br />
           moves/pushes: {game.score().join('/')}<br />
           <br />
