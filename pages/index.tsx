@@ -16,7 +16,6 @@ import goal from '../game/skins/boxxle/store.bmp'
 import box from '../game/skins/boxxle/object.bmp'
 import box_on_goal from '../game/skins/boxxle/object_store.bmp'
 import { useCallback, useEffect, useState } from 'react';
-import { solve } from '../game/solver';
 
 const keyToDir: { [key: string]: [number, number] } = {
   'ArrowLeft': [-1, 0],
@@ -89,6 +88,16 @@ const Home: NextPage = () => {
         <title>Sokoban</title>
         <meta name="description" content="The classic puzzle video game." />
         <link rel="icon" href="/favicon.ico" />
+        {/* Preload sprites to avoid UI flicker */}
+        <link rel="preload" as="image" href={player_left.src} />
+        <link rel="preload" as="image" href={player_right.src} />
+        <link rel="preload" as="image" href={player_up.src} />
+        <link rel="preload" as="image" href={player_down.src} />
+        <link rel="preload" as="image" href={floor.src} />
+        <link rel="preload" as="image" href={wall.src} />
+        <link rel="preload" as="image" href={goal.src} />
+        <link rel="preload" as="image" href={box.src} />
+        <link rel="preload" as="image" href={box_on_goal.src} />
       </Head>
 
       <main className={styles.main}>
