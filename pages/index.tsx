@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import { newGame, PLAYER, GOAL, BOX, BOX_ON_GOAL, WALL, FLOOR, PLAYER_ON_GOAL, Game } from '../game/game';
+import { newGame, PLAYER, GOAL, BOX, BOX_ON_GOAL, WALL, FLOOR, PLAYER_ON_GOAL, Game } from '../game';
 import { microcosmos } from '../game/levels';
 
 // Player
@@ -52,6 +52,7 @@ const Home: NextPage = () => {
     if (game.hasWon()) {
       setTimeout(() => {
         if (level < microcosmos.length - 1) {
+          console.log(game.solution())
           const nextLevel = level + 1
           setLevel(nextLevel)
           setGame(newGame(microcosmos[nextLevel]))
@@ -92,12 +93,9 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <pre>
-          <u>sokoban</u>
-        </pre>
-
-        <pre >
           level: {level}/{microcosmos.length}<br />
           moves/pushes: {game.score().join('/')}<br />
+          <br />
         </pre>
 
         <div>
@@ -105,24 +103,25 @@ const Home: NextPage = () => {
         </div>
 
         <pre>
+          <br />
           move: arrow keys<br />
           undo: z<br />
           reset: r<br />
           <br />
-          or..
         </pre>
 
         <div>
-          <button onClick={fakeKeyEvent('ArrowUp')}>↑</button>
+          <button className={styles.btn} onClick={fakeKeyEvent('ArrowUp')}>↑</button>
         </div>
-        <div><button onClick={fakeKeyEvent('ArrowLeft')}>←</button><button onClick={fakeKeyEvent('z')}>↺</button><button onClick={fakeKeyEvent('ArrowRight')}>→</button></div>
+        <div><button className={styles.btn} onClick={fakeKeyEvent('ArrowLeft')}>←</button><button className={styles.btn} onClick={fakeKeyEvent('z')}>↺</button><button className={styles.btn} onClick={fakeKeyEvent('ArrowRight')}>→</button></div>
         <div>
-          <button onClick={fakeKeyEvent('ArrowDown')}>↓</button>
+          <button className={styles.btn} onClick={fakeKeyEvent('ArrowDown')}>↓</button>
         </div>
 
         <pre>
-          app by <a href="https://twitter.com/healeycodes">@healeycodes</a><br />
           <br />
+          <br />
+          app by <a href="https://twitter.com/healeycodes">@healeycodes</a><br />
           credits:<br />
           - <a href="https://en.wikipedia.org/wiki/Boxxle">boxxle skin</a><br />
           - <a href="http://sneezingtiger.com/sokoban/levels/minicosmosText.html">minicosmos levels</a>

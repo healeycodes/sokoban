@@ -6,6 +6,7 @@ export type Game = {
   undo: () => void;
   reset: () => void;
   score: () => MovesAndPushes;
+  solution: () => string;
 };
 type XY = [number, number];
 type MovesAndPushes = [number, number];
@@ -144,14 +145,19 @@ export function checkGameWon(level: LevelYX) {
   return findChar(level, BOX).length === 0;
 }
 
+export function cloneLevel(level: LevelYX): LevelYX {
+  // Can be optimized (structuredClone, etc.)
+  return JSON.parse(JSON.stringify(level));
+}
+
 export function newGame(levelText: string): Game {
   const history: LevelYX[] = [];
-  const scores: MovesAndPushes[] = [];
+  const path: string[] = [];
 
   const init = () => {
     history.splice(0);
     history.push(parseLevel(levelText));
-    scores.splice(0);
+    path.splice(0);
   };
   init();
 
@@ -163,31 +169,28 @@ export function newGame(levelText: string): Game {
       return checkGameWon(history[history.length - 1]);
     },
     move: (dir) => {
-      const clone = JSON.parse(JSON.stringify(history[history.length - 1]));
+      const clone = cloneLevel(history[history.length - 1]);
       const direction = movePlayer(clone, dir[0], dir[1], true);
       if (direction !== false) {
         history.push(clone);
-        if (direction === direction.toUpperCase()) {
-          scores.push([1, 1]);
-        } else {
-          scores.push([1, 0]);
-        }
+        path.push(direction);
       }
     },
     undo: () => {
       if (history.length > 1) {
-        scores.pop();
+        path.pop();
         history.pop();
       }
     },
     reset: () => init(),
     score: () => {
-      return scores.reduce(
+      return path.reduce(
         (prev, cur) => {
-          return [prev[0] + cur[0], prev[1] + cur[1]];
+          return [prev[0] + 1, prev[1] + (cur.toUpperCase() === cur ? 1 : 0)];
         },
         [0, 0]
       );
     },
+    solution: () => path.join(""),
   };
 }

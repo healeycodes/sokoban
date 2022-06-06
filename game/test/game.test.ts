@@ -1,4 +1,4 @@
-import { newGame } from "../game";
+import { newGame } from "..";
 import { level1, level1_5, level2 } from "./test-levels";
 
 describe("levels can be completed", () => {
@@ -50,7 +50,7 @@ describe("movement edge cases are handled", () => {
   });
 });
 
-describe("undoe functionality", () => {
+describe("undo functionality", () => {
   test("scores can be mutated", () => {
     const game = newGame(level1_5);
     game.move([1, 0]);
@@ -70,5 +70,13 @@ describe("undoe functionality", () => {
     expect(game.state()[1][1]).toBe(" ");
     game.undo();
     expect(game.state()[1][1]).toBe("@");
+  });
+
+  test("solution is tracked", () => {
+    const game = newGame(level1_5);
+    game.move([1, 0]);
+    game.move([-1, 0]);
+    game.move([1, 0]);
+    expect(game.solution()).toBe("Rlr");
   });
 });

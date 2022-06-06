@@ -19,3 +19,15 @@
 .screen img {
   image-rendering: pixelated;
 }
+
+.btn {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.25em;
+  color: black;
+  padding: 5px;
+  height: 45px;
+  width: 45px;
+  margin: 1px;
+  background-color: white;
+  border: 1px solid black;
+}

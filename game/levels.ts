@@ -7,12 +7,6 @@ This file downloaded from the Sokoban levels page at http://sneezingtiger.com/so
 */
 
 export const microcosmos = [
-  // The first level here is like a tutorial level
-  // it's not part of the official set
-  `######
-#@$ .#
-######
-    `,
   `  #####
 ###   #
 # $ # ##

@@ -7,11 +7,15 @@ import {
   BOX,
   GOAL,
   PLAYER_ON_GOAL,
-} from "./game";
+  cloneLevel,
+} from ".";
 
-const stats = { steps: 0 };
+type Path = string | boolean;
+type Steps = number;
+type BoxesOnGoals = number;
+type BoxesToGoalsManhattanDistance = number;
 
-/** Perform a depth-first search for a solution.
+/** Perform a breadth-first search for a solution.
 
 This solve function is better than a brute force search by:
 - Not revisiting previously seen level states
@@ -19,59 +23,62 @@ This solve function is better than a brute force search by:
   - a) Move boxes onto goals (if possible)
   - b) Decrease the total distance of boxes from their nearest(*) goals
 
-(*) "nearest" means the naive distance, as if there were no other blockers */
-export function solve(level: LevelYX) {
-  // Reset steps
-  stats.steps = 0;
+(*) "nearest" means the Manhattan distance without taking blocking objects
+into account. */
+export function solve(level: LevelYX): [Path, Steps] {
+  // Track work done so we can analyze and benchmark
+  let steps = 1;
 
   // Don't revisit previously seen level states
   const seen = new Set();
 
-  function innerSolve(
-    level: LevelYX,
-    path: string
-  ): [false, number] | [string, number] {
-    const dirs = [
-      [1, 0],
-      [-1, 0],
-      [0, 1],
-      [0, -1],
-    ];
+  // List of legal directions
+  const dirs = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ];
+
+  const queue: [LevelYX, Path][] = [[cloneLevel(level), ""]];
+
+  while (queue.length > 0) {
+    const next = queue.shift();
+    if (next === undefined) {
+      throw "Unreachable";
+    }
+    const [current, path] = next;
+
+    // Serialize the level
+    const snapshot = JSON.stringify(current);
+    if (seen.has(snapshot)) {
+      continue;
+    }
+    seen.add(snapshot);
+
+    // Short circuit on a winning board
+    if (checkGameWon(current)) {
+      return [path, steps];
+    }
 
     const moves: [
-      // Cloned level
       LevelYX,
-      // Path so far
-      string,
-      // Boxes on goals
-      number,
-      // Boxes to goals Manhattan distance
-      number
+      Path,
+      BoxesOnGoals,
+      BoxesToGoalsManhattanDistance
     ][] = [];
 
-    // Prove up to four of the next legal moves and apply move ordering based on
-    // moving boxes onto goals, and the total Manhattan distance of boxes to goals.
-    // Also check if any of the next legal moves are the winning move
     for (let i = 0; i < dirs.length; i++) {
+      steps++;
+
       const dir = dirs[i];
       let _path = path;
-      const attempt = movePlayer(level, dir[0], dir[1], false);
+      const attempt = movePlayer(current, dir[0], dir[1], false);
       if (attempt !== false) {
-        stats.steps++;
-        const clone = JSON.parse(JSON.stringify(level));
+        const clone = cloneLevel(current);
+
         _path += attempt;
         movePlayer(clone, dir[0], dir[1], true);
-
-        const snapshot = JSON.stringify(clone);
-        if (seen.has(snapshot)) {
-          continue;
-        }
-        seen.add(snapshot);
-
-        // Short circuit on a game-winning move
-        if (checkGameWon(clone)) {
-          return [_path, stats.steps];
-        }
 
         const boxes = findChar(clone, BOX);
         const goals = [
@@ -95,22 +102,19 @@ export function solve(level: LevelYX) {
     }
 
     moves.sort((a, b) => {
-      // Weight boxes onto goals highest
+      // Prioritize moves that push boxes onto goals
       const boxesOnGoals = (b[2] - a[2]) * 1000;
-      // Otherwise, if there's a tie, fallback to this
+      // Then sort by the total Manhattan distance of boxes to goals
       const boxToGoalDistanceTotal = a[3] - b[3];
       return boxesOnGoals + boxToGoalDistanceTotal;
     });
 
-    // Note: there might be zero unseen level states
-    for (let i = 0; i < moves.length; i++) {
-      const next = innerSolve(moves[i][0], moves[i][1]);
-      if (next[0] !== false) {
-        return next;
-      }
-    }
-
-    return [false, -1];
+    const futureWork: [LevelYX, Path][] = moves.map((move) => [
+      move[0],
+      move[1],
+    ]);
+    queue.push(...futureWork);
   }
-  return innerSolve(level, "");
+
+  return [false, -1];
 }
