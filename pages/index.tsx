@@ -86,6 +86,7 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       <Head>
         <title>Sokoban</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
         <meta name="description" content="The classic puzzle video game." />
         <link rel="icon" href="/favicon.ico" />
         {/* Preload sprites to avoid UI flicker */}
