@@ -31,3 +31,13 @@
   background-color: white;
   border: 1px solid black;
 }
+
+@media (max-width: 415px) {
+  .controls {
+    display: none;
+  }
+
+  .screen {
+    padding-bottom: 30px;
+  }
+}

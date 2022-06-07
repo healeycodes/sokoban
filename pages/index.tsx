@@ -112,7 +112,7 @@ const Home: NextPage = () => {
           {render(game, lastDir)}
         </div>
 
-        <pre>
+        <pre className={styles.controls}>
           <br />
           move: arrow keys<br />
           undo: z<br />
@@ -129,7 +129,6 @@ const Home: NextPage = () => {
         </div>
 
         <pre>
-          <br />
           <br />
           app by <a href="https://twitter.com/healeycodes">@healeycodes</a><br />
           credits:<br />
